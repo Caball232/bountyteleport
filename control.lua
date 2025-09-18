@@ -44,26 +44,27 @@ end
 local function setBounties()
     waitForPlayers()
     local totalSent = 0
-    local increment = 2500000
-    while true do
-        for _, targetId in ipairs(targets) do
-            local targetPlayer = Players:GetPlayerByUserId(targetId)
-            if targetPlayer then
-                local buyerCurrency = getBuyerCurrency()
-                if buyerCurrency >= targetAmount then
-                    if kick then
-                        LocalPlayer:Kick("Buyer reached target amount")
-                    end
-                    return
+local increment = 2500000
+while true do
+    for _, targetId in ipairs(targets) do
+        local targetPlayer = Players:GetPlayerByUserId(targetId)
+        if targetPlayer then
+            local buyerCurrency = getBuyerCurrency()
+            local remaining = targetAmount - buyerCurrency
+            if remaining <= 0 then
+                if kick then
+                    LocalPlayer:Kick("Buyer reached target amount")
                 end
-                local remaining = targetAmount - buyerCurrency
-                local toSet = math.min(increment, remaining)
-                SetBounty:InvokeServer(targetPlayer.Name, getPreTax(toSet))
-                wait(60)
+                return
             end
+            local toSet = math.min(increment, remaining)
+            SetBounty:InvokeServer(targetPlayer.Name, getPreTax(toSet))
+            totalSent = totalSent + toSet
+            wait(60)
         end
-        wait(1)
     end
+    wait(1)
+end
 end
 
 setBounties()
