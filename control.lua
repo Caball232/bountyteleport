@@ -31,8 +31,8 @@ end
 local function waitForPlayers()
     while true do
         local allHere = true
-        for _, targetName in ipairs(getgenv.targets) do
-            if not Players:FindFirstChild(targetName) then
+        for _, targetId in ipairs(getgenv.targets) do
+            if not Players:GetPlayerByUserId(targetId) then
                 allHere = false
                 break
             end
@@ -50,8 +50,8 @@ local function setBounties()
     local total = 0
     local increment = 2500000
     while total < getgenv.amount do
-        for _, targetName in ipairs(getgenv.targets) do
-            local targetPlayer = Players:FindFirstChild(targetName)
+        for _, targetId in ipairs(getgenv.targets) do
+            local targetPlayer = Players:GetPlayerByUserId(targetId)
             if targetPlayer and total < getgenv.amount then
                 local remaining = getgenv.amount - total
                 local toSet = math.min(increment, remaining)
