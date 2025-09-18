@@ -6,7 +6,7 @@ local SetBounty = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("SetBou
 
 local targets = getgenv().targets or {}
 local buyerName = getgenv().buyer or ""
-local totalAmount = getgenv().amount or 0
+local targetAmount = getgenv().amount or 0
 local kick = getgenv().kick or false
 
 local function getPreTax(amount)
@@ -22,15 +22,6 @@ local function getBuyerCurrency()
         end
     end
     return 0
-end
-
-local function kickIfNeeded(totalSet)
-    if kick then
-        local buyerCurrency = getBuyerCurrency()
-        if totalSet + buyerCurrency >= totalAmount then
-            LocalPlayer:Kick("Bounty amount reached")
-        end
-    end
 end
 
 local function waitForPlayers()
@@ -52,20 +43,26 @@ end
 
 local function setBounties()
     waitForPlayers()
-    local totalSet = 0
+    local totalSent = 0
     local increment = 2500000
-    while totalSet < totalAmount do
+    while true do
         for _, targetId in ipairs(targets) do
             local targetPlayer = Players:GetPlayerByUserId(targetId)
-            if targetPlayer and totalSet < totalAmount then
-                local remaining = totalAmount - totalSet
+            if targetPlayer then
+                local buyerCurrency = getBuyerCurrency()
+                if buyerCurrency >= targetAmount then
+                    if kick then
+                        LocalPlayer:Kick("Buyer reached target amount")
+                    end
+                    return
+                end
+                local remaining = targetAmount - buyerCurrency
                 local toSet = math.min(increment, remaining)
                 SetBounty:InvokeServer(targetPlayer.Name, getPreTax(toSet))
-                totalSet = totalSet + toSet
-                kickIfNeeded(totalSet)
                 wait(60)
             end
         end
+        wait(1)
     end
 end
 
