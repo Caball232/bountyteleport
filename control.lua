@@ -3,6 +3,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 
 local SetBounty = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("SetBounty")
+local targets = getgenv().targets
+local buyer = getgenv().buyer
+local amount = getgenv().amount
+local kick = getgenv().kick
 
 local function getPreTax(amount)
     return math.ceil(amount / 0.65)
